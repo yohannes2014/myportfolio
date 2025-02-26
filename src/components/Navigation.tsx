@@ -90,7 +90,7 @@ const handleButtonClick = () => {
                 </ul>
             </div>
             <div>
-              <p className='bg-primary text-white px-2 py-1 rounded-md' onClick={handleButtonClick}>Resume</p>
+              <p className='bg-primary text-white px-2 py-1 rounded-md cursor-pointer hover:bg-blue-950' onClick={handleButtonClick}>Resume</p>
             </div>
         </div>
     </div>

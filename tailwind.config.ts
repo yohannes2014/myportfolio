@@ -9,7 +9,8 @@ export default {
       colors:{
         primary:"#2e278c",
         light:"#8C8CC2",
-        background:"#ACACE596"
+        background:"#ACACE596",
+        message:"#0A0500B5"
       },
       screens: {
         '4xs': '180px', 

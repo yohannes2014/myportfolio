@@ -2,23 +2,74 @@ import React, { useState } from 'react';
 import { MdEmail } from "react-icons/md";
 import { FaMobile } from "react-icons/fa";
 import  axios  from "axios";
+import Message from './Message';
 
 const Contact: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(false);
   const [input, setInput] = useState({
     fullName:'',
     email:'',
     message:''
   });
+  const [error, setError] = useState({
+    fullname:'',
+    email:'',
+    message:''
+  });
 
-const handleInput = (e:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-   const { name, value} = e.target;
 
-   setInput((pre)=>({...pre, [name]:value}));
 
+const handleFullname = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const {name, value} = e.target;
+  setInput((pre)=>({...pre, [name]:value}));
+
+  if(value===""){
+    setError((pre)=>({...pre, fullname : "Please enter your name"}))
+  }
+  setError((pre)=>({...pre, fullname : ""}))
+}
+const handleEmail = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const {name, value} = e.target;
+  setInput((pre)=>({...pre, [name]:value}));
+
+  if(value===""){
+    setError((pre)=>({...pre, email : "Please enter your email"}))
+  }
+  setError((pre)=>({...pre, email : ""}))
+}
+const handleMessage = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+  const {name, value} = e.target;
+  setInput((pre)=>({...pre, [name]:value}));
+
+  if(value===""){
+    setError((pre)=>({...pre, message : "Please enter your message"}))
+  }
+  setError((pre)=>({...pre, message : ""}))
 }
 
 const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
+
+if(input.fullName === "" && input.email === "" && input.message === ""){
+  setError((pre)=>({...pre, fullname : "Please enter your name"}))
+  setError((pre)=>({...pre, email : "Please enter your email"}))
+  setError((pre)=>({...pre, message : "Please enter your message"}))
+  return
+}
+else if (input.fullName === ""){
+  setError((pre)=>({...pre, fullname : "Please enter your name"}))
+}
+else if (input.email === ""){
+  setError((pre)=>({...pre, email : "Please enter your email"}))
+}
+else if (input.message === ""){
+  setError((pre)=>({...pre, message : "Please enter your message"}))
+}
+else{
+
+setLoading(true)
+
   const mess = {
     fullname:input.fullName,
     email:input.email,
@@ -26,13 +77,37 @@ const submitHandler = (e:React.FormEvent<HTMLFormElement>) => {
   }
 
 axios.post('http://localhost:8000/api/message', mess)
-.then(()=>console.log(mess))
+.then(()=>{
+setLoading(false);
+setMessage(true);
+setInput({
+  fullName:'',
+  email:'',
+  message:''
+})
+
+
+})
 .catch((err)=>console.log(err))
+.finally(()=>{
+  
+
+  setTimeout(() => {
+    setMessage(false)
+        }, 4000);
+
+})
+
+}
+
 
 }
 
   return (
+    <>
+     {message && <Message />}
     <div className='lg:w-[1120px] m-auto '  >
+ 
       <p className='text-center text-primary 2xs:text-[28px] font-bold text-[18px] pt-20 mb-2' id='contact'>Contact us</p>
 
       <div className=' w-full flex justify-center'>
@@ -43,26 +118,26 @@ axios.post('http://localhost:8000/api/message', mess)
               <div className='3xs:mb-1'>
                 <div className='flex justify-between px-1'>
                   <label className='text-[12px]'>Full name:</label>
-                  <p className='text-red-500 font-bold'>*</p>
+                  <p className='text-red-500 font-bold'>{error.fullname}</p>
                 </div>
-                <input onChange={handleInput} name='fullName' className='w-full h-7 text-md px-1 text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200' type='text' />
+                <input onChange={handleFullname} value={input.fullName} name='fullName' className='w-full h-7 text-md px-1 text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200' type='text' />
               </div>
               <div className='mt-1'>
                 <div className='flex justify-between px-1'>
                   <label className='text-[12px]'>Email:</label>
-                  <p className='text-red-500 font-bold'>*</p>
+                  <p className='text-red-500 font-bold'>{error.email}</p>
                 </div>
-                <input onChange={handleInput} name='email' className='w-full h-7 text-md px-1 text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200' type='email' />
+                <input onChange={handleEmail} value={input.email} name='email' className='w-full h-7 text-md px-1 text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200' type='email' />
               </div>
               <div className='mt-1'>
                 <div className='flex justify-between px-1'>
                   <label className="text-[12px]" >Message:</label>
-                  <p className='text-red-500 font-bold'>*</p>
+                  <p className='text-red-500 font-bold'>{error.message}</p>
                 </div>
-                <textarea onChange={handleInput} name='message' className='w-full h-[50px] px-1 text-md text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200 resize-none' ></textarea>
+                <textarea onChange={handleMessage} name='message' value={input.message} className='w-full h-[50px] px-1 text-md text-primary font-semibold bg-white border-b-2 border-blue-300 rounded-md focus:outline-lime-200 resize-none' ></textarea>
               </div>
               <div className='flex gap-3 my-1'>
-                <button  className='bg-primary hover:bg-blue-950 text-white px-5 py-1 text-[12px] rounded-md' type='submit'>Submit</button>
+                <button  className={`bg-primary cursor-pointer hover:bg-blue-950 text-white px-8 py-1 text-[12px] rounded-md ${loading ? 'disabled bg-blue-950': ''}`} type='submit'>{loading ? 'Sending...':'Send'}</button>
                 <p className='cursor-pointer bg-green-500 px-3 py-1 rounded-md hover:bg-green-600 text-[12px] text-white'>Cancel</p>
               </div>
             </form>
@@ -83,6 +158,8 @@ axios.post('http://localhost:8000/api/message', mess)
         </div>
       </div>
     </div>
+   
+    </>
   )
 }
 
