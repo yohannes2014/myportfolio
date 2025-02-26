@@ -82,6 +82,10 @@ const Contact: React.FC = () => {
           setLoading(false);
           setMessage(true);
 
+          setTimeout(() => {
+            setMessage(false);
+          }, 2000);
+
 
         })
         .catch((err) => console.log(err))
@@ -94,9 +98,7 @@ const Contact: React.FC = () => {
           });
 
         })
-      setTimeout(() => {
-        setMessage(false);
-      }, 4000);
+    
     }
 
 
